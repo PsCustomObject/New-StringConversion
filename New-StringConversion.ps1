@@ -2,50 +2,88 @@
 {
 <#
 	.SYNOPSIS
-		A brief description of the New-StringConversion function.
+		Function to remove any non-unicode character from a string.
 	
 	.DESCRIPTION
-		A detailed description of the New-StringConversion function.
+		Function is used to sanitize non-unicode characters from a string.
+	
+		Function supports ignoring white spaces in the string, complete
+		removal of any white space, replacement with a default character
+		or with any character specified by the user.
+	
+		Function supports custom characters map via the UnicodeHashTable
+		parameter accepting an hashtable of characters to replace.
+	
+		If unknown characters, not specified in the default character map,
+		are found they are replace with a question mark '?' but uer can
+		specifiy any custom character of choice.
 	
 	.PARAMETER StringToConvert
-		A description of the StringToConvert parameter.
+		The string containing non unicode characters that needs to be normalized.
 	
 	.PARAMETER UnicodeHashTable
-		Specify a custom hash of characters to replace
+		Specify a custom hash of characters to replace.
 	
 	.PARAMETER IgnoreSpaces
-		A description of the IgnoreSpaces parameter.
+		If specified white spaces will be ignored.
 	
 	.PARAMETER ReplaceSpace
-		A description of the ReplaceSpace parameter.
+		Used to specify character to use when string contains a white space which 
+		by default are replaced by the dash '-' character.
 	
 	.PARAMETER RemoveSpaces
-		A description of the RemoveSpaces parameter.
+		Will return a string with any white space removed.
 	
 	.PARAMETER UnknownCharacter
-		A description of the UnknownCharacter parameter.
+		Allows user to specify which character to use as a replacement 
+		for unrecognized characters.
+		
+		By default a question mark '?' is used.
 	
 	.EXAMPLE
-		PS C:\> New-StringConversion
+		PS C:\> New-StringConversion -StringToConvert 'Große Zimmerpflanzen für daheim & Büro'
 	
-	.OUTPUTS
-		string, string, string
+		Replaces any special character in string: 
 	
-	.NOTES
-		Additional information about the function.
+		Grosse-Zimmerpflanzen-fur-daheim-e-Buro
+		
+	.EXAMPLE
+		
+		PS C:\> New-StringConversion -StringToConvert 'Große Zimmerpflanzen für daheim & Büro' -IgnoreSpaces
+	
+		Replaces any special character in string ignoring any whitespace:
+	
+		Grosse Zimmerpflanzen fur daheim e Buro
+	
+	.EXAMPLE
+	
+		PS C:\> New-StringConversion -StringToConvert 'Große Zimmerpflanzen für daheim & Büro' -ReplaceSpaces
+		'---'
+	
+		Replaces any special character in string replacing any white space with three dashes:
+	
+		Grosse---Zimmerpflanzen---fur---daheim---e---Buro
 #>
 	
-	[OutputType([string], ParameterSetName = 'IgnoreSpaces')]
-	[OutputType([string], ParameterSetName = 'ReplaceSpaces')]
+	[CmdletBinding(DefaultParameterSetName = 'RemoveSpaces',
+				   ConfirmImpact = 'High',
+				   HelpUri = 'https://PsCustomObject.github.io',
+				   PositionalBinding = $true,
+				   SupportsShouldProcess = $false)]
 	[OutputType([string], ParameterSetName = 'RemoveSpaces')]
+	[OutputType([string], ParameterSetName = 'ReplaceSpaces')]
+	[OutputType([string], ParameterSetName = 'IgnoreSpaces')]
 	[OutputType([string])]
 	param
 	(
-		[Parameter(ParameterSetName = 'IgnoreSpaces')]
-		[Parameter(ParameterSetName = 'RemoveSpaces')]
+		[Parameter(ParameterSetName = 'IgnoreSpaces',
+				   Position = 0)]
+		[Parameter(ParameterSetName = 'RemoveSpaces',
+				   Position = 0)]
 		[Parameter(ParameterSetName = 'ReplaceSpaces',
-				   Mandatory = $true)]
+				   Mandatory = $false)]
 		[ValidateNotNullOrEmpty()]
+		[Alias('string')]
 		[string]
 		$StringToConvert,
 		[Parameter(ParameterSetName = 'IgnoreSpaces')]
@@ -55,16 +93,16 @@
 		[object]
 		$UnicodeHashTable = $unicodeHashTable,
 		[Parameter(ParameterSetName = 'IgnoreSpaces',
-				   Mandatory = $true)]
+				   Mandatory = $false)]
 		[switch]
 		$IgnoreSpaces,
 		[Parameter(ParameterSetName = 'ReplaceSpaces',
-				   Mandatory = $true)]
+				   Mandatory = $false)]
 		[ValidateNotNullOrEmpty()]
 		[string]
-		$ReplaceSpace,
+		$ReplaceSpace = '-',
 		[Parameter(ParameterSetName = 'RemoveSpaces',
-				   Mandatory = $true)]
+				   Mandatory = $false)]
 		[switch]
 		$RemoveSpaces,
 		[Parameter(ParameterSetName = 'IgnoreSpaces')]
@@ -122,6 +160,7 @@
 			'ė' = 'e'
 			'ę' = 'e'
 			'ě' = 'e'
+			'&' = 'e'
 			
 			# g
 			'ĝ' = 'e'
@@ -311,7 +350,10 @@
 				$NewCharArray += $Char
 			}
 		}
-		$unicodeString = -join [char[]]$NewCharArray
+		
+		# Format return value
+		#$unicodeString = -join [char[]]$NewCharArray
+		$unicodeString = -join [array]$NewCharArray
 	}
 	else
 	{
