@@ -36,8 +36,7 @@ Default usage, normalize a string containing special characters
 
 
 ```powershell
-New-StringConversion -StringToConvert '
-Die große Lösung und die lästigen Formalien'
+New-StringConversion -StringToConvert 'Die große Lösung und die lästigen Formalien'
 ```
 
 
@@ -51,8 +50,7 @@ Will print
 Normalize string without removing any white space
 
 ```powershell
-New-StringConversion -StringToConvert '
-Die große Lösung und die lästigen Formalien' -IgnoreSpaces
+New-StringConversion -StringToConvert 'Die große Lösung und die lästigen Formalien' -IgnoreSpaces
 ```
 
 Will print
@@ -64,8 +62,7 @@ Will print
 Normalize string replacing white spaces with the character specified by the user
 
 ```powershell
-New-StringConversion -StringToConvert '
-Die große Lösung und die lästigen Formalien' -ReplaceSpaces '..'
+New-StringConversion -StringToConvert 'Die große Lösung und die lästigen Formalien' -ReplaceSpaces '..'
 ```
 
 Will print
