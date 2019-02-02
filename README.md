@@ -67,4 +67,4 @@ New-StringConversion -StringToConvert 'Die große Lösung und die lästigen Form
 
 Will print
 
->Die--grosse--Losung--und--die--lastenden--Formalien
+>Die..grosse..Losung..und..die..lastenden..Formalien
